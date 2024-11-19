@@ -1,0 +1,482 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcel Booking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"> <!-- Bootstrap -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            margin-top: 50px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-control {
+            border-radius: 5px;
+        }
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+        .form-check-label {
+            font-weight: normal;
+        }
+        .help-block {
+            font-size: 0.9rem;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Parcel Booking Form</h2>
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Sender Details -->
+            <div class="form-group">
+                <label for="id_sender_name">Sender Name</label>
+                <input type="text" name="sender_name" class="form-control" id="id_sender_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_sender_phone">Sender Phone</label>
+                <input type="text" name="sender_phone" class="form-control" id="id_sender_phone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_sender_address">Sender Address</label>
+                <input type="text" name="sender_address" class="form-control" id="id_sender_address" value="Chittagong Road, Narayanganj" required>
+            </div>
+
+            <!-- Receiver Details -->
+            <div class="form-group">
+                <label for="id_receiver_name">Receiver Name</label>
+                <input type="text" name="receiver_name" class="form-control" id="id_receiver_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_receiver_phone">Receiver Phone</label>
+                <input type="text" name="receiver_phone" class="form-control" id="id_receiver_phone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_receiver_address">Receiver Address</label>
+                <input type="text" name="receiver_address" class="form-control" id="id_receiver_address" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_district">District</label>
+                <input type="text" name="district" class="form-control" id="id_district" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_area">Area (optional)</label>
+                <input type="text" name="area" class="form-control" id="id_area">
+            </div>
+
+            <!-- Delivery Details -->
+            <div class="form-group">
+                <label for="id_delivery_charge">Delivery Charge</label>
+                <input type="number" step="0.01" name="delivery_charge" class="form-control" id="id_delivery_charge" required>
+            </div>
+
+            <div class="form-group form-check">
+                <input type="checkbox" name="cod_option" class="form-check-input" id="id_cod_option">
+                <label class="form-check-label" for="id_cod_option">Cash on Delivery</label>
+            </div>
+
+            <div class="form-group">
+                <label for="id_cod_amount">COD Amount</label>
+                <input type="number" step="0.01" name="cod_amount" class="form-control" id="id_cod_amount">
+                <small class="help-block">Fill this if you selected Cash on Delivery</small>
+            </div>
+
+            <div class="form-group">
+                <label for="id_cod_charge">COD Charge</label>
+                <input type="number" step="0.01" name="cod_charge" class="form-control" id="id_cod_charge" disabled>
+            </div>
+
+            <!-- Payment and Pickup Details -->
+            <div class="form-group">
+                <label for="id_payment_option">Payment Option</label>
+                <select name="payment_option" class="form-control" id="id_payment_option">
+                    <option value="cash">Cash</option>
+                    <option value="to_pay">To Pay</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="id_pickup_system">Pickup System</label>
+                <select name="pickup_system" class="form-control" id="id_pickup_system">
+                    <option value="home_delivery">Home Delivery</option>
+                    <option value="office_delivery">Office Delivery</option>
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-custom btn-lg">Book Parcel</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS, Popper, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        // Show COD fields if checkbox is checked
+        document.getElementById('id_cod_option').addEventListener('change', function() {
+            let codFields = document.getElementById('id_cod_amount').closest('.form-group');
+            let codChargeField = document.getElementById('id_cod_charge').closest('.form-group');
+            if (this.checked) {
+                codFields.style.display = 'block';
+                codChargeField.style.display = 'block';
+            } else {
+                codFields.style.display = 'none';
+                codChargeField.style.display = 'none';
+            }
+        });
+
+        // Initial hide COD fields if checkbox is unchecked
+        if (!document.getElementById('id_cod_option').checked) {
+            document.getElementById('id_cod_amount').closest('.form-group').style.display = 'none';
+            document.getElementById('id_cod_charge').closest('.form-group').style.display = 'none';
+        }
+    </script>
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcel Booking - Niyamat Express</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"> <!-- Bootstrap -->
+    <style>
+        /* Body */
+        /* General body styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc; /* Light background */
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Align content to the top */
+            padding-top: 56px; /* Added padding-top to avoid overlap with navbar */
+        }
+        
+        /* Navbar */
+        .navbar {
+            background-color: #fff; /* White background for navbar */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for contrast */
+            border-bottom: 1px solid #ddd; /* Light border to distinguish navbar */
+            position: fixed; /* Fixed positioning */
+            top: 0; /* Position it at the top */
+            left: 0;
+            width: 100%;
+            z-index: 1000; /* Ensure it stays above other content */
+            padding: 10px 0; /* Padding for navbar */
+        }
+        
+        /* Navbar brand and links */
+        .navbar-brand {
+            color: #007bff !important; /* Blue color for brand */
+            font-size: 1.5rem;
+            font-weight: 600; /* Bold for brand */
+        }
+        
+        .navbar-nav .nav-link {
+            color: #333 !important; /* Darker text for navigation links */
+            font-weight: 500;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: #007bff !important; /* Blue color when hovered */
+        }
+        
+        /* Container for the main content */
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 100px; /* Adjusted margin-top for better spacing from fixed navbar */
+        }
+        
+        /* Responsive adjustments for small screens */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px;
+            }
+        
+            .container {
+                padding: 20px;
+                margin-top: 80px; /* Reduced margin-top on smaller screens */
+            }
+        }
+        h2 {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .form-control {
+            border-radius: 5px;
+        }
+
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+
+        .footer {
+            background-color: #f4f7fc; /* Match the body color */
+            color: #333;
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            border-top: 1px solid #ddd; /* Light border above the footer */
+        }
+
+        .form-check {
+            display: flex;
+            flex-direction: column;  /* Aligns the checkbox below the label */
+            align-items: center;     /* Centers the checkbox horizontally */
+        }
+        
+        .form-check-label {
+            font-weight: normal;
+            margin-bottom: 5px;      /* Adds some space between the label and the checkbox */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+            <a class="navbar-brand" href="#">Niyamat Express</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'booking_list' %}">All Booking</a>
+                    </li>
+                </ul>
+            </div>
+        
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2>Parcel Booking Form</h2>
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Sender Details -->
+            <div class="form-group">
+                <label for="id_sender_name">Sender Name</label>
+                <input type="text" name="sender_name" class="form-control" id="id_sender_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_sender_phone">Sender Phone</label>
+                <input type="text" name="sender_phone" class="form-control" id="id_sender_phone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_sender_address">Sender Address</label>
+                <input type="text" name="sender_address" class="form-control" id="id_sender_address" value="Chittagong Road, Narayanganj" required>
+            </div>
+
+            <!-- Receiver Details -->
+            <div class="form-group">
+                <label for="id_receiver_name">Receiver Name</label>
+                <input type="text" name="receiver_name" class="form-control" id="id_receiver_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_receiver_phone">Receiver Phone</label>
+                <input type="text" name="receiver_phone" class="form-control" id="id_receiver_phone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_receiver_address">Receiver Address</label>
+                <input type="text" name="receiver_address" class="form-control" id="id_receiver_address" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_district">District</label>
+                <input type="text" name="district" class="form-control" id="id_district" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_area">Area (optional)</label>
+                <input type="text" name="area" class="form-control" id="id_area">
+            </div>
+
+            <!-- Delivery Details -->
+            <div class="form-group">
+                <label for="id_delivery_charge">Delivery Charge</label>
+                <input type="number" step="0.01" name="delivery_charge" class="form-control" id="id_delivery_charge" required>
+            </div>
+
+            <br>
+
+            <div class="form-group form-check">
+                <input type="checkbox" name="cod_option" class="form-check-input" id="id_cod_option">
+                <label class="form-check-label" for="id_cod_option">Cash on Delivery</label>
+            </div>
+
+            <br>
+            
+            <div class="form-group" id="cod-fields" style="display:none;">
+                <label for="id_cod_amount">COD Amount</label>
+                <input type="number" step="0.01" name="cod_amount" class="form-control" id="id_cod_amount">
+                <small class="form-text text-muted">Fill this if you selected Cash on Delivery</small>
+            </div>
+
+            <div class="form-group" id="cod-charge" style="display:none;">
+                <label for="id_cod_charge">COD Charge</label>
+                <input type="number" step="0.01" name="cod_charge" class="form-control" id="id_cod_charge" disabled>
+            </div>
+
+            <!-- Payment and Pickup Details -->
+            <div class="form-group">
+                <label for="id_payment_option">Payment Option</label>
+                <select name="payment_option" class="form-control" id="id_payment_option">
+                    <option value="cash">Cash</option>
+                    <option value="to_pay">To Pay</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="id_pickup_system">Pickup System</label>
+                <select name="pickup_system" class="form-control" id="id_pickup_system">
+                    <option value="home_delivery">Home Delivery</option>
+                    <option value="office_delivery">Office Delivery</option>
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-custom btn-lg">Book Parcel</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2024 Niyamat Express. All rights reserved.</p>
+    </div>
+
+    <!-- Bootstrap JS, Popper, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        // Show/hide COD fields based on checkbox
+        document.getElementById('id_cod_option').addEventListener('change', function() {
+            let codFields = document.getElementById('cod-fields');
+            let codChargeField = document.getElementById('cod-charge');
+            if (this.checked) {
+                codFields.style.display = 'block';
+                codChargeField.style.display = 'block';
+            } else {
+                codFields.style.display = 'none';
+                codChargeField.style.display = 'none';
+            }
+        });
+
+        // Initial hide COD fields if checkbox is unchecked
+        if (!document.getElementById('id_cod_option').checked) {
+            document.getElementById('cod-fields').style.display = 'none';
+            document.getElementById('cod-charge').style.display = 'none';
+        }
+
+        // Auto-calculate COD charge based on COD amount
+        document.getElementById('id_cod_amount').addEventListener('input', function() {
+            const codAmount = parseFloat(this.value);
+            let codCharge = 0;
+
+            if (codAmount > 0 && codAmount <= 1000) {
+                codCharge = 20;
+            } else if (codAmount > 1000 && codAmount <= 2000) {
+                codCharge = 30;
+            } else if (codAmount > 2000 && codAmount <= 3000) {
+                codCharge = 40;
+            } else if (codAmount > 3000 && codAmount <= 4000) {
+                codCharge = 50;
+            } else if (codAmount > 4000 && codAmount <= 5000) {
+                codCharge = 60;
+            } else if (codAmount > 5000 && codAmount <= 6000) {
+                codCharge = 70;
+            } else if (codAmount > 6000 && codAmount <= 7000) {
+                codCharge = 80;
+            } else if (codAmount > 7000 && codAmount <= 8000) {
+                codCharge = 90;
+            } else if (codAmount > 8000 && codAmount <= 9000) {
+                codCharge = 100;
+            } else if (codAmount > 9000 && codAmount <= 10000) {
+                codCharge = 110;
+            } else if (codAmount > 10000 && codAmount <= 11000) {
+                codCharge = 120;
+            } else if (codAmount > 11000 && codAmount <= 12000) {
+                codCharge = 130;
+            } else if (codAmount > 12000 && codAmount <= 13000) {
+                codCharge = 140;
+            } else if (codAmount > 13000 && codAmount <= 14000) {
+                codCharge = 150;
+            } else if (codAmount > 14000 && codAmount <= 15000) {
+                codCharge = 160;
+            } else if (codAmount > 15000 && codAmount <= 16000) {
+                codCharge = 170;
+            }
+
+            document.getElementById('id_cod_charge').value = codCharge.toFixed(2);
+        });
+    </script>
+</body>
+</html>
